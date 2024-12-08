@@ -6,6 +6,8 @@ import sqlite3
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
+from docx.text.paragraph import Paragraph
+from docx.styles.style import BaseStyle
 
 
 load_dotenv()
@@ -25,9 +27,12 @@ Hi there, I am EchoBot.
 I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
 """)
     
-@bot.message_handler(commands=['get'])
-def get_worker(message):
-    doc = Document("LI Pochta+Eosdo+1c.docx")
+def apply_style(paragraph: Paragraph, text: str, style: BaseStyle):
+    paragraph.text = text
+    paragraph.style = style
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+def build_styles(doc):
     styles = doc.styles
     BIGstyle = styles.add_style('Big', WD_STYLE_TYPE.PARAGRAPH)
     BIGstyle.font.name = 'Times New Roman'
@@ -35,6 +40,14 @@ def get_worker(message):
     SMALLstyle = styles.add_style('Small', WD_STYLE_TYPE.PARAGRAPH)
     SMALLstyle.font.name = 'Times New Roman'
     SMALLstyle.font.size = Pt(11)
+
+    return BIGstyle, SMALLstyle
+    
+@bot.message_handler(commands=['get'])
+def get_worker(message):
+    doc = Document("LI Pochta+Eosdo+1c.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -55,9 +68,8 @@ def get_worker(message):
     date = datetime.today().strftime("%d.%m.%Y")
     name = FIO.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
-    doc.tables[0].rows[1].cells[1].paragraphs[1].text = FIO
-    doc.tables[0].rows[1].cells[1].paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    doc.tables[0].rows[1].cells[1].paragraphs[1].style = BIGstyle
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], FIO, BIGstyle)
     doc.tables[0].rows[5].cells[1].paragraphs[0] = str(number) 
     doc.tables[0].rows[5].cells[1].paragraphs[1].text.style = "\nУкажите обязательно для учетной записи категории А, для других категорий оставьте поле пустым"       
     # doc.tables[0].rows[6].cells[1].paragraphs = f"\n{position}\nУкажите обязательно для учетной записи категории А, для других категорий оставьте поле пустым"
