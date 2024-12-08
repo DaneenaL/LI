@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from docx import Document
 from dotenv import load_dotenv, dotenv_values
 import telebot 
@@ -23,8 +24,7 @@ bot = telebot.TeleBot(API_TOKEN)
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.reply_to(message, """\
-Hi there, I am EchoBot.
-I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
+Напишите |/get ФИО| работника, на которого нужен лист исполнения\
 """)
     
 def apply_style(paragraph: Paragraph, text: str, style: BaseStyle):
@@ -69,42 +69,43 @@ def get_worker(message):
     name = FIO.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], FIO, BIGstyle)
-    doc.tables[0].rows[5].cells[1].paragraphs[0] = str(number) 
-    doc.tables[0].rows[5].cells[1].paragraphs[1].text.style = "\nУкажите обязательно для учетной записи категории А, для других категорий оставьте поле пустым"       
-    # doc.tables[0].rows[6].cells[1].paragraphs = f"\n{position}\nУкажите обязательно для учетной записи категории А, для других категорий оставьте поле пустым"
-    # doc.tables[0].rows[8].cells[1].paragraphs = f'{department}\nДля категории А – в соответствии со штатным расписанием, для остальных – куда прикрепляется'
-    # doc.tables[0].rows[9].cells[1].paragraphs = f'{address}\nУкажите фактический адрес рабочего места пользователя и номер кабинета'
-    # doc.tables[0].rows[14].cells[1].paragraphs = f'\n{name}\nРасшифровка подписи (ФИО)'
-    # doc.tables[0].rows[14].cells[4].paragraphs = f'\n{date}\nДата подписания'
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
 
-    # doc.tables[2].rows[8].cells[2].paragraphs = f'\n{director}\nФИО'
-    # doc.tables[2].rows[8].cells[4].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[2].rows[9].cells[4].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[2].rows[17].cells[1].paragraphs = f'\n{name}\nРасшифровка подписи (ФИО)'
-    # doc.tables[2].rows[17].cells[3].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[2].rows[3].cells[4].paragraphs = f'\n{date}\nДата подписания'
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-    # doc.tables[4].rows[8].cells[4].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[4].rows[9].cells[4].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[4].rows[8].cells[2].paragraphs = f'\n{director}\nФИО'
-    # doc.tables[4].rows[17].cells[1].paragraphs = f'\n{name}\nРасшифровка подписи (ФИО)'
-    # doc.tables[4].rows[17].cells[3].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[4].rows[3].cells[4].paragraphs = f'\n{date}\nДата подписания'
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-    # doc.tables[6].rows[8].cells[2].paragraphs = f'\n{director}\nФИО'
-    # doc.tables[6].rows[8].cells[4].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[6].rows[9].cells[4].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[6].rows[17].cells[1].paragraphs = f'\n{name}\nРасшифровка подписи (ФИО)'
-    # doc.tables[6].rows[17].cells[3].paragraphs = f'\n{date}\nДата подписания'
-    # doc.tables[6].rows[3].cells[4].paragraphs = f'\n{date}\nДата подписания'
+   
 
-    doc.save(f"LI_{name}.doc")
+    apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-# Handle all other messages with content_type 'text' (content_types defaults to ['text'])
-@bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    bot.reply_to(message, message.text)
+    filename = f"LI_{name}.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
 
 
 bot.infinity_polling()
