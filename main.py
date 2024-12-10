@@ -26,12 +26,21 @@ bot = telebot.TeleBot(API_TOKEN)
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.reply_to(message, """\
-/gli - Лист исполнения на почту, 1С, ЕОСДО
-/glic - Лист исполнения на 1С
-/glice - Лист исполнения на 1С, ЕОСДО
-/glipc - Лист исполнения на 1С, Почту
-/glie - Лист исполнения на ЕОСДО
-/gliep - Лист исполнения на ЕОСДО, Почту\
+/gli ФИО - Лист исполнения на почту, 1С, ЕОСДО, BOXER
+/glip ФИО - Лист исполнения на почту
+/glic ФИО - Лист исполнения на 1С
+/glice ФИО - Лист исполнения на 1С, ЕОСДО
+/glipc ФИО - Лист исполнения на 1С, Почту
+/glie ФИО - Лист исполнения на ЕОСДО
+/gliep ФИО - Лист исполнения на ЕОСДО, Почту
+/glib ФИО - Лист исполнения на BOXER
+/gsz ФИО - Служебка на УЗ в kisozk.local
+/glipce ФИО - Лист исполнения на почту, 1С, ЕОСДО
+/glicb ФИО - Лист исполнения на 1С, BOXER
+/gliceb ФИО - Лист исполнения на 1С, ЕОСДО, BOXER
+/glipcb ФИО - Лист исполнения на 1С, Почту, BOXER
+/glieb ФИО - Лист исполнения на ЕОСДО, BOXER
+/gliepb ФИО - Лист исполнения на ЕОСДО, Почту, BOXER
 """)
     
 def apply_style(paragraph: Paragraph, text: str, style: BaseStyle):
@@ -151,7 +160,7 @@ def get_worker(message):
 # list ispolneniya na vse
 @bot.message_handler(commands=['gli'])
 def get_worker(message):
-    doc = Document("LI_Pochta+EOSDO+1C.docx")
+    doc = Document("LI_Pochta+EOSDO+1C+BOXER.docx")
 
     BIGstyle, SMALLstyle = build_styles(doc)
 
@@ -184,7 +193,6 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
     
-
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
     apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
@@ -199,16 +207,21 @@ def get_worker(message):
     apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
     apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-   
-
     apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
     apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
     apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
     apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
     apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[8].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[8].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[8].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[8].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[8].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[8].rows[3].cells[4].paragraphs [0], date, BIGstyle)
     
-    filename = f"LI_{name}_Pochta_Eosdo_1C.doc"
+    filename = f"LI_{name}_Pochta_Eosdo_1C_BOXER.doc"
     doc.save(filename)
     bot.send_document(message.chat.id, open(filename, 'rb'))
     os.remove(filename)
@@ -253,7 +266,7 @@ def get_worker_sz_istok(message):
 #list ispolneniya na pochtu
 @bot.message_handler(commands=['glip'])
 def get_worker(message):
-    doc = Document("LI Pochta+EOSDO+1C.docx")
+    doc = Document("LI_Pochta.docx")
 
     BIGstyle, SMALLstyle = build_styles(doc)
 
@@ -463,6 +476,414 @@ def get_worker(message):
     doc.save(filename)
     bot.send_document(message.chat.id, open(filename, 'rb'))
     os.remove(filename)
+
+    #list ispolneniya na BOXER
+@bot.message_handler(commands=['glib'])
+def get_worker(message):
+    doc = Document("LI_Boxer.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[0], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+    
+    filename = f"LI_{name}_BOXER.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+    # list ispolneniya na 1C eosdo boxer
+@bot.message_handler(commands=['gliceb'])
+def get_worker(message):
+    doc = Document("LI_EOSDO+1C+BOXER.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    filename = f"LI_{name}_Eosdo_1C_BOXER.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+    #list ispolneniya na 1C boxer
+@bot.message_handler(commands=['glicb'])
+def get_worker(message):
+    doc = Document("LI_1C+BOXER.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+    
+    filename = f"LI_{name}_1C_BOXER.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+     # list ispolneniya na pochta 1c boxer
+@bot.message_handler(commands=['glipcb'])
+def get_worker(message):
+    doc = Document("LI_Pochta+1C+BOXER.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    filename = f"LI_{name}1C_BOXER_Pochta.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+#list ispolneniya na EOSDO+BOxer
+@bot.message_handler(commands=['glieb'])
+def get_worker(message):
+    doc = Document("LI_EOSDO+BOXER.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+    
+    filename = f"LI_{name}_EOSDO_BOXER.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+    # list ispolneniya na EOSDO Pochta BOXER
+@bot.message_handler(commands=['gliepb'])
+def get_worker(message):
+    doc = Document("LI_Pochta+EOSDO+BOXER.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    filename = f"LI_{name}_Eosdo_Pochta_BOXER.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+    # list ispolneniya na 1C eosdo boxer
+@bot.message_handler(commands=['glipce'])
+def get_worker(message):
+    doc = Document("LI_Pochta+EOSDO+1C.docx")
+
+    BIGstyle, SMALLstyle = build_styles(doc)
+
+    cur = con.cursor()
+    s = message.text.split(' ', 1)
+    if len(s) < 2:
+        bot.reply_to(message, 'Введите ФИО')
+        return
+    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    data = res.fetchone()
+    if data is None:
+        bot.reply_to(message, "Работник не найден")
+        return
+    FIO = data[1]
+    number = data[2]
+    position = data[3]
+    department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
+    name = FIO.split(" ") 
+    name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    
+    apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+
+    filename = f"LI_{name}_Eosdo_Pochta_1C.doc"
+    doc.save(filename)
+    bot.send_document(message.chat.id, open(filename, 'rb'))
+    os.remove(filename)
+
+
 
 
 bot.infinity_polling()
