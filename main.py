@@ -14,7 +14,7 @@ from docx.styles.style import BaseStyle
 load_dotenv()
 config = dotenv_values(".env")
 
-con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432")
+con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") # host = "psql"?
 
 API_TOKEN = config['TOKEN']
 
