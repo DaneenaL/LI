@@ -3,7 +3,7 @@ import os
 from docx import Document
 from dotenv import load_dotenv, dotenv_values
 import telebot 
-import sqlite3
+import psycopg2
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
@@ -14,7 +14,7 @@ from docx.styles.style import BaseStyle
 load_dotenv()
 config = dotenv_values(".env")
 
-con = sqlite3.connect("datausr.db", check_same_thread=False)
+con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432")
 
 API_TOKEN = config['TOKEN']
 
@@ -72,7 +72,7 @@ def get_worker(message):
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
+    res = cur.execute("""select * from datauser where position = %s;""", (s[1],))
     data = res.fetchone()
     if data is None:
         bot.reply_to(message, "Работник не найден")
