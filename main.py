@@ -60,7 +60,7 @@ def build_styles(doc):
 
 def select_from_datauser(field: str, value: str):
     with con.cursor() as cur:
-        cur.execute("select * from datauser where %s = %s;", (field, value))
+        cur.execute('select * from datauser where username = %s', (value,))
         result = cur.fetchall()
     return result
 
@@ -77,7 +77,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser('FIO', s[1])
+    data = select_from_datauser('username', s[1])
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
