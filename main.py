@@ -18,8 +18,6 @@ import os.path
 load_dotenv()
 config = dotenv_values(".env")
 
-con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432")
-
 API_TOKEN = config['TOKEN']
 
 bot = telebot.TeleBot(API_TOKEN)
@@ -58,7 +56,8 @@ def build_styles(doc):
 
     return BIGstyle
 
-def select_from_datauser(field: str, value: str):
+def select_from_datauser(value: str):
+    con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432")
     with con.cursor() as cur:
         cur.execute('select * from datauser where username = %s', (value,))
         result = cur.fetchall()
@@ -68,17 +67,13 @@ def select_from_datauser(field: str, value: str):
 #list ispolneniya na 1C
 @bot.message_handler(commands=['glic'])
 def get_worker(message):
-    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_1C.docx"))
-
-    BIGstyle = build_styles(doc)
-
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
     
     data = select_from_datauser('username', s[1])
-    if data is None:
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
     data = data[0] # TODO: поставить обработку нескольких работников
@@ -92,6 +87,9 @@ def get_worker(message):
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_1C.docx"))
+    BIGstyle = build_styles(doc)
 
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
