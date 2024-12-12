@@ -106,10 +106,10 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -126,20 +126,20 @@ def get_worker(message):
     #list ispolneniya na EOSDO
 @bot.message_handler(commands=['glie'])
 def get_worker(message):
-    doc = Document("LI_EOSDO.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -150,14 +150,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -175,20 +178,20 @@ def get_worker(message):
 # list ispolneniya na vse
 @bot.message_handler(commands=['gli'])
 def get_worker(message):
-    doc = Document("LI_Pochta+EOSDO+1C+BOXER.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -199,14 +202,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -243,27 +249,33 @@ def get_worker(message):
 
 #sluzhebka na kisozk
 @bot.message_handler(commands=['gsz'])
-def get_worker_sz_istok(message):
-    doc = Document("SZ_istok_na_UZ.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+def get_worker(message):
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
+    address = data[5]
+    director = data[6]
+    date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
+
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_1C.docx"))
+    BIGstyle = build_styles(doc)
     
     apply_style(doc.tables[1].rows[1].cells[0].paragraphs[0], fio, BIGstyle)
     apply_style(doc.tables[1].rows[1].cells[1].paragraphs[0], department, BIGstyle)
@@ -279,22 +291,21 @@ def get_worker_sz_istok(message):
 
 
 #list ispolneniya na pochtu
-@bot.message_handler(commands=['glip'])
 def get_worker(message):
-    doc = Document("LI_Pochta.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -305,14 +316,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Pochta.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -330,20 +344,20 @@ def get_worker(message):
 #list ispolneniya na 1C EOSDO
 @bot.message_handler(commands=['glice'])
 def get_worker(message):
-    doc = Document("LI_EOSDO+1C.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -354,14 +368,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO+1C.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -385,20 +402,20 @@ def get_worker(message):
 #list ispolneniya na 1C+Pochta
 @bot.message_handler(commands=['glipc'])
 def get_worker(message):
-    doc = Document("LI_Pochta+1C.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -409,14 +426,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Pochta+1C.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -440,20 +460,20 @@ def get_worker(message):
         #list ispolneniya na EOSDO+Pochta
 @bot.message_handler(commands=['gliep'])
 def get_worker(message):
-    doc = Document("LI_Pochta+EOSDO.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -464,14 +484,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Pochta+EOSDO.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -495,20 +518,20 @@ def get_worker(message):
     #list ispolneniya na BOXER
 @bot.message_handler(commands=['glib'])
 def get_worker(message):
-    doc = Document("LI_Boxer.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -519,14 +542,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], fio, BIGstyle)
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Boxer.docx"))
+    BIGstyle = build_styles(doc)
+
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[0], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -543,20 +569,20 @@ def get_worker(message):
     # list ispolneniya na 1C eosdo boxer
 @bot.message_handler(commands=['gliceb'])
 def get_worker(message):
-    doc = Document("LI_EOSDO+1C+BOXER.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -567,14 +593,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO+1C+BOXER.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -605,20 +634,20 @@ def get_worker(message):
     #list ispolneniya na 1C boxer
 @bot.message_handler(commands=['glicb'])
 def get_worker(message):
-    doc = Document("LI_1C+BOXER.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -629,14 +658,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_1C+BOXER.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -660,20 +692,20 @@ def get_worker(message):
      # list ispolneniya na pochta 1c boxer
 @bot.message_handler(commands=['glipcb'])
 def get_worker(message):
-    doc = Document("LI_Pochta+1C+BOXER.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -684,14 +716,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Pochta+1C+BOXER.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -722,20 +757,20 @@ def get_worker(message):
 #list ispolneniya na EOSDO+BOxer
 @bot.message_handler(commands=['glieb'])
 def get_worker(message):
-    doc = Document("LI_EOSDO+BOXER.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -746,14 +781,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO+BOXER.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -777,20 +815,20 @@ def get_worker(message):
     # list ispolneniya na EOSDO Pochta BOXER
 @bot.message_handler(commands=['gliepb'])
 def get_worker(message):
-    doc = Document("LI_Pochta+EOSDO+BOXER.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -801,14 +839,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Pochta+EOSDO+BOXER.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -839,20 +880,20 @@ def get_worker(message):
     # list ispolneniya na 1C eosdo boxer
 @bot.message_handler(commands=['glipce'])
 def get_worker(message):
-    doc = Document("LI_Pochta+EOSDO+1C.docx")
-
-    BIGstyle = build_styles(doc)
-
-    cur = con.cursor()
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute(f"select * from datauser where FIO = '{s[1]}'")
-    data = res.fetchone()
-    if data is None:
+    
+    data = select_from_datauser(s[1])
+    if not data:
         bot.reply_to(message, "Работник не найден")
         return
+    data = data[0] # TODO: поставить обработку нескольких работников
+
     fio = data[1]
     number = data[2]
     position = data[3]
@@ -863,14 +904,17 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO+1C+BOXER.docx"))
+    BIGstyle = build_styles(doc)
+
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[1], address, BIGstyle)
-    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[14].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
+    apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
