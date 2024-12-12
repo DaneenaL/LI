@@ -10,19 +10,21 @@ from docx.shared import Pt
 from docx.text.paragraph import Paragraph
 from docx.styles.style import BaseStyle
 
+from consts import BASE_TEMPLATE_FOLDER
+
+import os.path
+
 
 load_dotenv()
 config = dotenv_values(".env")
 
-con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") # host = "psql"?
+con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432")
 
 API_TOKEN = config['TOKEN']
 
 bot = telebot.TeleBot(API_TOKEN)
 
 # Handle '/start' and '/help'
-
-
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.reply_to(message, """\
@@ -53,41 +55,45 @@ def build_styles(doc):
     BIGstyle = styles.add_style('Big', WD_STYLE_TYPE.PARAGRAPH)
     BIGstyle.font.name = 'Times New Roman'
     BIGstyle.font.size = Pt(12)
-    SMALLstyle = styles.add_style('Small', WD_STYLE_TYPE.PARAGRAPH)
-    SMALLstyle.font.name = 'Times New Roman'
-    SMALLstyle.font.size = Pt(11)
 
-    return BIGstyle, SMALLstyle
+    return BIGstyle
+
+def select_from_datauser(field: str, value: str):
+    with con.cursor() as cur:
+        cur.execute("select * from datauser where %s = %s;", (field, value))
+        result = cur.fetchall()
+    return result
 
 
 #list ispolneniya na 1C
 @bot.message_handler(commands=['glic'])
 def get_worker(message):
-    doc = Document("LI_1C.docx")
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_1C.docx"))
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
-    cur = con.cursor()
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
-    res = cur.execute("""select * from datauser where position = %s;""", (s[1],))
-    data = res.fetchone()
+    
+    data = select_from_datauser('FIO', s[1])
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    data = data[0] # TODO: поставить обработку нескольких работников
+
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -113,7 +119,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_EOSDO.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -125,17 +131,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -162,7 +168,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Pochta+EOSDO+1C+BOXER.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -174,17 +180,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -231,7 +237,7 @@ def get_worker(message):
 def get_worker_sz_istok(message):
     doc = Document("SZ_istok_na_UZ.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -243,17 +249,17 @@ def get_worker_sz_istok(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
     
-    apply_style(doc.tables[1].rows[1].cells[0].paragraphs[0], FIO, BIGstyle)
+    apply_style(doc.tables[1].rows[1].cells[0].paragraphs[0], fio, BIGstyle)
     apply_style(doc.tables[1].rows[1].cells[1].paragraphs[0], department, BIGstyle)
     apply_style(doc.tables[1].rows[1].cells[2].paragraphs[0], str(number), BIGstyle)
-    doc.paragraphs[8].text =  position+' '*(123-len(position)-len(FIO))+FIO
+    doc.paragraphs[8].text =  position+' '*(123-len(position)-len(fio))+fio
     doc.paragraphs[8].style = BIGstyle  
     doc.paragraphs[8].alignment = WD_ALIGN_PARAGRAPH.LEFT
 
@@ -268,7 +274,7 @@ def get_worker_sz_istok(message):
 def get_worker(message):
     doc = Document("LI_Pochta.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -280,17 +286,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -317,7 +323,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_EOSDO+1C.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -329,17 +335,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -372,7 +378,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Pochta+1C.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -384,17 +390,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -427,7 +433,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Pochta+EOSDO.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -439,17 +445,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -482,7 +488,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Boxer.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -494,17 +500,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -530,7 +536,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_EOSDO+1C+BOXER.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -542,17 +548,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -592,7 +598,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_1C+BOXER.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -604,17 +610,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -647,7 +653,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Pochta+1C+BOXER.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -659,17 +665,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -709,7 +715,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_EOSDO+BOXER.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -721,17 +727,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -764,7 +770,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Pochta+EOSDO+BOXER.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -776,17 +782,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -826,7 +832,7 @@ def get_worker(message):
 def get_worker(message):
     doc = Document("LI_Pochta+EOSDO+1C.docx")
 
-    BIGstyle, SMALLstyle = build_styles(doc)
+    BIGstyle = build_styles(doc)
 
     cur = con.cursor()
     s = message.text.split(' ', 1)
@@ -838,17 +844,17 @@ def get_worker(message):
     if data is None:
         bot.reply_to(message, "Работник не найден")
         return
-    FIO = data[1]
+    fio = data[1]
     number = data[2]
     position = data[3]
     department = data[4]
     address = data[5]
     director = data[6]
     date = datetime.today().strftime("%d.%m.%Y")
-    name = FIO.split(" ") 
+    name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], FIO, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
@@ -882,8 +888,6 @@ def get_worker(message):
     doc.save(filename)
     bot.send_document(message.chat.id, open(filename, 'rb'))
     os.remove(filename)
-
-
 
 
 bot.infinity_polling()
