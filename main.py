@@ -57,11 +57,11 @@ def build_styles(doc):
     return BIGstyle
 
 def select_from_datauser(value: str):
-    con = psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432")
-    with con.cursor() as cur:
-        cur.execute('select * from datauser where username = %s', (value,))
-        result = cur.fetchall()
-    return result
+    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
+        with con.cursor() as cur:
+            cur.execute('select * from datauser where username = %s', (value,))
+            result = cur.fetchall()
+        return result
 
 
 #list ispolneniya na 1C
