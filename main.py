@@ -59,20 +59,31 @@ def build_styles(doc):
 def select_from_datauser(value: str):
     with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
         with con.cursor() as cur:
-            cur.execute('select * from datauser where username = %s', (value,))
+            cur.execute('select * from workers where username = %s', (value,))
             result = cur.fetchall()
-        return result
+    return result
+    
+def check_permissions(telegram_ID: int) -> bool:
+    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
+        with con.cursor() as cur:
+            cur.execute('select * from users where telegram_id = %s', (telegram_ID,))
+            result = cur.fetchone()
+    return bool(result)
+
 
 
 #list ispolneniya na 1C
 @bot.message_handler(commands=['glic'])
 def get_worker(message):
+    if not check_permissions(message.from_user.id):
+        bot.reply_to(message, "Доступа нет")
+        return
     s = message.text.split(' ', 1)
     if len(s) < 2:
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser('username', s[1])
+    data = select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
