@@ -208,7 +208,7 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
-    apply_style(doc.tables[0].rows[8].cells[1].paragraphs[0], department, BIGstyle)
+    apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], department, BIGstyle)
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
