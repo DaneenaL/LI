@@ -291,7 +291,8 @@ def get_worker(message):
 
 
 #list ispolneniya na pochtu
-def get_worker(message):(commands=['glip'])
+@bot.message_handler(commands=['glip'])
+def get_worker(message):
     if not check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
