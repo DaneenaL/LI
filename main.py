@@ -50,7 +50,7 @@ def apply_style(paragraph: Paragraph, text: str, style: BaseStyle):
 
 def build_styles(doc):
     styles = doc.styles
-    if styles.get("Big"):
+    if styles["Big"]:
         styles["Big"].delete()
     BIGstyle = styles.add_style('Big', WD_STYLE_TYPE.PARAGRAPH)
     BIGstyle.font.name = 'Times New Roman'
