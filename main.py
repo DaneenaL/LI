@@ -879,7 +879,7 @@ def get_worker(message):
     os.remove(filename)
 
     # list ispolneniya na 1C eosdo boxer
-@bot.message_handler(commands=['glipce'])
+@bot.message_handler(commands=['gliec'])
 def get_worker(message):
     if not check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
@@ -905,7 +905,7 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO+1C+BOXER.docx"))
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO+1C.docx"))
     BIGstyle = build_styles(doc)
 
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
@@ -931,14 +931,8 @@ def get_worker(message):
     apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
     apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-    apply_style(doc.tables[6].rows[8].cells[2].paragraphs[0], director, BIGstyle)
-    apply_style(doc.tables[6].rows[8].cells[4].paragraphs [0], date, BIGstyle)
-    apply_style(doc.tables[6].rows[9].cells[4].paragraphs [0], date, BIGstyle)
-    apply_style(doc.tables[6].rows[17].cells[1].paragraphs[0], name, BIGstyle)
-    apply_style(doc.tables[6].rows[17].cells[3].paragraphs[0], date, BIGstyle)
-    apply_style(doc.tables[6].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-    filename = f"LI_{name}_Eosdo_Pochta_1C.doc"
+    filename = f"LI_{name}_Eosdo_1C.doc"
     doc.save(filename)
     bot.send_document(message.chat.id, open(filename, 'rb'))
     os.remove(filename)
