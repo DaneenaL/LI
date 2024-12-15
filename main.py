@@ -281,8 +281,8 @@ def get_worker(message):
     apply_style(doc.tables[1].rows[1].cells[1].paragraphs[0], department, BIGstyle)
     apply_style(doc.tables[1].rows[1].cells[2].paragraphs[0], str(number), BIGstyle)
 
-    apply_style(doc.tables[2].rows[0].cells[0].paragraphs[0] , position)
-    apply_style(doc.tables[2].rows[0].cells[1].paragraphs[0] , fio)
+    apply_style(doc.tables[2].rows[0].cells[0].paragraphs[0] , position, BIGstyle)
+    apply_style(doc.tables[2].rows[0].cells[1].paragraphs[0] , fio, BIGstyle)
 
     filename = f"LI_{name}.doc"
     doc.save(filename)
