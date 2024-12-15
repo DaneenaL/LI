@@ -546,7 +546,7 @@ def get_worker(message):
     doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Boxer.docx"))
     BIGstyle = build_styles(doc)
 
-    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
+    apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
     apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
     apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], department, BIGstyle)
