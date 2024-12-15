@@ -50,8 +50,6 @@ def apply_style(paragraph: Paragraph, text: str, style: BaseStyle):
 
 def build_styles(doc):
     styles = doc.styles
-    if styles["Big"]:
-        styles["Big"].delete()
     BIGstyle = styles.add_style('Big', WD_STYLE_TYPE.PARAGRAPH)
     BIGstyle.font.name = 'Times New Roman'
     BIGstyle.font.size = Pt(12)
@@ -282,9 +280,9 @@ def get_worker(message):
     apply_style(doc.tables[1].rows[1].cells[0].paragraphs[0], fio, BIGstyle)
     apply_style(doc.tables[1].rows[1].cells[1].paragraphs[0], department, BIGstyle)
     apply_style(doc.tables[1].rows[1].cells[2].paragraphs[0], str(number), BIGstyle)
-    doc.paragraphs[8].text =  position+' '*(123-len(position)-len(fio))+fio
-    doc.paragraphs[8].style = BIGstyle  
-    doc.paragraphs[8].alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+    apply_style(doc.tables[2].rows[1].cells[0].paragraphs[0] , position)
+    apply_style(doc.tables[2].rows[1].cells[1].paragraphs[0] , fio)
 
     filename = f"LI_{name}.doc"
     doc.save(filename)
