@@ -204,7 +204,7 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_EOSDO.docx"))
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_Pochta+EOSDO+1C+BOXER.docx"))
     BIGstyle = build_styles(doc)
 
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[1], fio, BIGstyle)
@@ -276,7 +276,7 @@ def get_worker(message):
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
 
-    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "LI_1C.docx"))
+    doc = Document(os.path.join(BASE_TEMPLATE_FOLDER, "SZ_istok_na_UZ.docx"))
     BIGstyle = build_styles(doc)
     
     apply_style(doc.tables[1].rows[1].cells[0].paragraphs[0], fio, BIGstyle)
