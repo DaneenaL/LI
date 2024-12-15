@@ -284,7 +284,7 @@ def get_worker(message):
     apply_style(doc.tables[2].rows[0].cells[0].paragraphs[0] , position, BIGstyle)
     apply_style(doc.tables[2].rows[0].cells[1].paragraphs[0] , fio, BIGstyle)
 
-    filename = f"LI_{name}.doc"
+    filename = f"SZ_{name}_kisozk.local.doc"
     doc.save(filename)
     bot.send_document(message.chat.id, open(filename, 'rb'))
     os.remove(filename)
