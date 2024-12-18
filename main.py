@@ -3,7 +3,6 @@ import os
 from docx import Document
 from dotenv import load_dotenv, dotenv_values
 import telebot 
-import psycopg2
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Pt
@@ -14,6 +13,8 @@ from consts import BASE_TEMPLATE_FOLDER
 
 import os.path
 
+import database
+from telegram_templates import document_keyboard
 
 load_dotenv()
 config = dotenv_values(".env")
@@ -70,38 +71,16 @@ def build_styles(doc):
 
     return BIGstyle
 
-def select_from_datauser(value: str):
-    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
-        with con.cursor() as cur:
-            cur.execute('select * from workers where username = %s', (value,))
-            result = cur.fetchall()
-    return result
-    
-def check_permissions(telegram_ID: int) -> bool:
-    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
-        with con.cursor() as cur:
-            cur.execute('select * from users where telegram_id = %s', (telegram_ID,))
-            result = cur.fetchone()
-    return bool(result)
-
-def get_fio_from_user(telegram_ID: int) -> bool:
-    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
-        with con.cursor() as cur:
-            cur.execute('select current_fio from users where telegram_id = %s', (telegram_ID,))
-            result = cur.fetchone()
-    return result
-
-
 
 #list ispolneniya na 1C
 @bot.callback_query_handler(func=lambda call: call.data == 'glic')
 def get_worker(call):
-    if not check_permissions(call.from_user.id):
+    if not database.check_permissions(call.from_user.id):
         bot.reply_to(call, "Доступа нет")
         return
     print(call.from_user.id)
-    fio_from_user=get_fio_from_user(call.from_user.id)[0]
-    data = select_from_datauser(fio_from_user)
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(call, "Работник не найден")
         return
@@ -144,7 +123,7 @@ def get_worker(call):
 #list ispolneniya na EOSDO
 @bot.message_handler(commands=['glie'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -152,7 +131,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -196,7 +175,7 @@ def get_worker(message):
 #list ispolneniya na vse krome SS
 @bot.message_handler(commands=['glipceb'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -204,7 +183,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -268,7 +247,7 @@ def get_worker(message):
 #sluzhebka na kisozk
 @bot.message_handler(commands=['gsz'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -276,7 +255,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -311,7 +290,7 @@ def get_worker(message):
 #list ispolneniya na pochtu
 @bot.message_handler(commands=['glip'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -319,7 +298,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -363,7 +342,7 @@ def get_worker(message):
 #list ispolneniya na 1C EOSDO
 @bot.message_handler(commands=['glice'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -371,7 +350,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -421,7 +400,7 @@ def get_worker(message):
 #list ispolneniya na 1C+Pochta
 @bot.message_handler(commands=['glipc'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -429,7 +408,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -479,7 +458,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO+Pochta
 @bot.message_handler(commands=['gliep'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -487,7 +466,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -537,7 +516,7 @@ def get_worker(message):
 #list ispolneniya na BOXER
 @bot.message_handler(commands=['glib'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -545,7 +524,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -588,7 +567,7 @@ def get_worker(message):
 #list ispolneniya na 1C eosdo boxer
 @bot.message_handler(commands=['gliceb'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -596,7 +575,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -653,7 +632,7 @@ def get_worker(message):
 #list ispolneniya na 1C boxer
 @bot.message_handler(commands=['glicb'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -661,7 +640,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -711,7 +690,7 @@ def get_worker(message):
 # list ispolneniya na pochta 1c boxer
 @bot.message_handler(commands=['glipcb'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -719,7 +698,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -776,7 +755,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO+BOxer
 @bot.message_handler(commands=['glieb'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -784,7 +763,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -834,7 +813,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO Pochta BOXER
 @bot.message_handler(commands=['gliepb'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -842,7 +821,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -899,7 +878,7 @@ def get_worker(message):
 #list ispolneniya na 1C eosdo pochtu
 @bot.message_handler(commands=['glipce'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -907,7 +886,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -965,7 +944,7 @@ def get_worker(message):
 #list ispolneniya na vse
 @bot.message_handler(commands=['gli'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -973,7 +952,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1044,7 +1023,7 @@ def get_worker(message):
 #list ispolneniya na 1C SS
 @bot.message_handler(commands=['glics'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1052,7 +1031,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1102,7 +1081,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO SS
 @bot.message_handler(commands=['glies'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1110,7 +1089,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1160,7 +1139,7 @@ def get_worker(message):
 #list ispolneniya na pochtu ss
 @bot.message_handler(commands=['glips'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1168,7 +1147,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1218,7 +1197,7 @@ def get_worker(message):
 #list ispolneniya na 1C EOSDO ss
 @bot.message_handler(commands=['glices'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1226,7 +1205,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1283,7 +1262,7 @@ def get_worker(message):
 #list ispolneniya na 1C+Pochta ss
 @bot.message_handler(commands=['glipcs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1291,7 +1270,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1348,7 +1327,7 @@ def get_worker(message):
 #list ispolneniya na BOXER ss
 @bot.message_handler(commands=['glibs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1356,7 +1335,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1406,7 +1385,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO+Pochta ss
 @bot.message_handler(commands=['glieps'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1414,7 +1393,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1471,7 +1450,7 @@ def get_worker(message):
 #list ispolneniya na 1C eosdo pochtu ss
 @bot.message_handler(commands=['glipces'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1479,7 +1458,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1544,7 +1523,7 @@ def get_worker(message):
 #list ispolneniya na 1C boxer ss
 @bot.message_handler(commands=['glicbs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1552,7 +1531,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1609,7 +1588,7 @@ def get_worker(message):
 #list ispolneniya na 1C eosdo boxer ss
 @bot.message_handler(commands=['glicebs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1617,7 +1596,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1681,7 +1660,7 @@ def get_worker(message):
 # list ispolneniya na pochta 1c boxer ss
 @bot.message_handler(commands=['glipcbs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1689,7 +1668,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1753,7 +1732,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO+BOxer ss
 @bot.message_handler(commands=['gliebs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1761,7 +1740,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1818,7 +1797,7 @@ def get_worker(message):
 #list ispolneniya na EOSDO Pochta BOXER ss
 @bot.message_handler(commands=['gliepbs'])
 def get_worker(message):
-    if not check_permissions(message.from_user.id):
+    if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
     s = message.text.split(' ', 1)
@@ -1826,7 +1805,7 @@ def get_worker(message):
         bot.reply_to(message, 'Введите ФИО')
         return
     
-    data = select_from_datauser(s[1])
+    data = database.select_from_datauser(s[1])
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1889,32 +1868,12 @@ def get_worker(message):
 
 @bot.message_handler()
 def priem_fio(message):
-    if check_users_by_fio(message.text):
-        add_fio(message.text, message.from_user.id)
+    if database.check_users_by_fio(message.text):
+        database.add_fio(message.text, message.from_user.id)
     else:
         bot.send_message(message.chat.id, "работник не найден")
         return
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    button_glic = telebot.types.InlineKeyboardButton(text="Лист исполнения на 1С", callback_data='glic')
-    keyboard.add(button_glic)
-    bot.send_message(message.chat.id, 'Выберете документ', reply_markup=keyboard)
+    bot.send_message(message.chat.id, 'Выберете документ', reply_markup=document_keyboard())
 
-def check_users_by_fio(value: str):
-    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
-        with con.cursor() as cur:
-            cur.execute('select * from workers where username = %s', (value,))
-            result = cur.fetchall()
-    return bool(result)
-
-def add_fio(value: str, telegram_id):
-    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
-        with con.cursor() as cur:
-            cur.execute('update users set current_fio = %s where telegram_id = %s', (value, telegram_id))
-            con.commit()
-    
 
 bot.infinity_polling()
-
-
-
-
