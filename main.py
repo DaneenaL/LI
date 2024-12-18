@@ -80,6 +80,7 @@ def get_worker(call):
         return
     print(call.from_user.id)
     fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
     data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(call, "Работник не найден")
@@ -121,19 +122,15 @@ def get_worker(call):
     os.remove(filename)
 
 #list ispolneniya na EOSDO
-@bot.message_handler(commands=['glie'])
-def get_worker(message):
-    if not database.check_permissions(message.from_user.id):
-        bot.reply_to(message, "Доступа нет")
+@bot.callback_query_handler(func=lambda call: call.data == 'glie')
+def get_worker(call):
+    if not database.check_permissions(call.from_user.id):
+        bot.reply_to(call, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
-        bot.reply_to(message, "Работник не найден")
+        bot.reply_to(call, "Работник не найден")
         return
     data = data[0] # TODO: поставить обработку нескольких работников
 
@@ -168,24 +165,20 @@ def get_worker(message):
     
     filename = f"LI_{name}_EOSDO.doc"
     doc.save(filename)
-    bot.send_document(message.chat.id, open(filename, 'rb'))
+    bot.send_document(call.message.chat.id, open(filename, 'rb'))
     os.remove(filename)
 
 
 #list ispolneniya na vse krome SS
-@bot.message_handler(commands=['glipceb'])
-def get_worker(message):
-    if not database.check_permissions(message.from_user.id):
-        bot.reply_to(message, "Доступа нет")
+@bot.callback_query_handler(func=lambda call: call.data == 'glipceb')
+def get_worker(call):
+    if not database.check_permissions(call.from_user.id):
+        bot.reply_to(call, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
-        bot.reply_to(message, "Работник не найден")
+        bot.reply_to(call, "Работник не найден")
         return
     data = data[0] # TODO: поставить обработку нескольких работников
 
@@ -241,7 +234,7 @@ def get_worker(message):
     
     filename = f"LI_{name}_Pochta_Eosdo_1C_BOXER.doc"
     doc.save(filename)
-    bot.send_document(message.chat.id, open(filename, 'rb'))
+    bot.send_document(call.message.chat.id, open(filename, 'rb'))
     os.remove(filename)
 
 #sluzhebka na kisozk
@@ -250,12 +243,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -293,12 +282,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -345,12 +330,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -403,12 +384,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -461,12 +438,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -519,12 +492,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -570,12 +539,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -635,12 +600,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -693,12 +654,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -758,12 +715,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -816,12 +769,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -881,12 +830,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -947,12 +892,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1026,12 +967,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1084,12 +1021,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1142,12 +1075,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1200,12 +1129,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1265,12 +1190,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1330,12 +1251,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1388,12 +1305,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1453,12 +1366,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1526,12 +1435,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1591,12 +1496,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1663,12 +1564,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1735,12 +1632,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1800,12 +1693,8 @@ def get_worker(message):
     if not database.check_permissions(message.from_user.id):
         bot.reply_to(message, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = database.select_from_datauser(s[1])
+    fio_from_user=database.get_fio_from_user(call.from_user.id)[0]
+    data = database.select_from_datauser(fio_from_user)
     if not data:
         bot.reply_to(message, "Работник не найден")
         return
@@ -1873,7 +1762,7 @@ def priem_fio(message):
     else:
         bot.send_message(message.chat.id, "работник не найден")
         return
-    bot.send_message(message.chat.id, 'Выберете документ', reply_markup=document_keyboard())
+    bot.send_message(message.chat.id, 'Выберите ИТ-ресурсы', reply_markup=document_keyboard())
 
 
 bot.infinity_polling()
