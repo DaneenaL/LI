@@ -1,10 +1,10 @@
-import telebot 
+from telebot.types import InlineKeyboardButton as Button, InlineKeyboardMarkup
 
-def document_keyboard() -> telebot.types.InlineKeyboardMarkup:
-    keyboard = telebot.types.InlineKeyboardMarkup()
+def document_keyboard() -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup()
 
     buttons = [
-        telebot.types.InlineKeyboardButton(text="Лист исполнения на 1С", callback_data='glic')
+        Button(text="Лист исполнения на 1С", callback_data='glic')
     ]
     
     keyboard.add(*buttons)
