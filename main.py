@@ -84,22 +84,26 @@ def check_permissions(telegram_ID: int) -> bool:
             result = cur.fetchone()
     return bool(result)
 
+def get_fio_from_user(telegram_ID: int) -> bool:
+    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
+        with con.cursor() as cur:
+            cur.execute('select current_fio from users where telegram_id = %s', (telegram_ID,))
+            result = cur.fetchone()
+    return result
+
 
 
 #list ispolneniya na 1C
-@bot.message_handler(commands=['glic'])
-def get_worker(message):
-    if not check_permissions(message.from_user.id):
-        bot.reply_to(message, "Доступа нет")
+@bot.callback_query_handler(func=lambda call: call.data == 'glic')
+def get_worker(call):
+    if not check_permissions(call.from_user.id):
+        bot.reply_to(call, "Доступа нет")
         return
-    s = message.text.split(' ', 1)
-    if len(s) < 2:
-        bot.reply_to(message, 'Введите ФИО')
-        return
-    
-    data = select_from_datauser(s[1])
+    print(call.from_user.id)
+    fio_from_user=get_fio_from_user(call.from_user.id)[0]
+    data = select_from_datauser(fio_from_user)
     if not data:
-        bot.reply_to(message, "Работник не найден")
+        bot.reply_to(call, "Работник не найден")
         return
     data = data[0] # TODO: поставить обработку нескольких работников
 
@@ -134,7 +138,7 @@ def get_worker(message):
     
     filename = f"LI_{name}_1C.doc"
     doc.save(filename)
-    bot.send_document(message.chat.id, open(filename, 'rb'))
+    bot.send_document(call.message.chat.id, open(filename, 'rb'))
     os.remove(filename)
 
 #list ispolneniya na EOSDO
@@ -1883,7 +1887,31 @@ def get_worker(message):
     bot.send_document(message.chat.id, open(filename, 'rb'))
     os.remove(filename)
 
+@bot.message_handler()
+def priem_fio(message):
+    if check_users_by_fio(message.text):
+        add_fio(message.text, message.from_user.id)
+    else:
+        bot.send_message(message.chat.id, "работник не найден")
+        return
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    button_glic = telebot.types.InlineKeyboardButton(text="Лист исполнения на 1С", callback_data='glic')
+    keyboard.add(button_glic)
+    bot.send_message(message.chat.id, 'Выберете документ', reply_markup=keyboard)
 
+def check_users_by_fio(value: str):
+    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
+        with con.cursor() as cur:
+            cur.execute('select * from workers where username = %s', (value,))
+            result = cur.fetchall()
+    return bool(result)
+
+def add_fio(value: str, telegram_id):
+    with psycopg2.connect(dbname = config["POSTGRES_DB"], user = config["POSTGRES_USER"], password = config["POSTGRES_PASSWORD"], host = "localhost", port = "5432") as con:
+        with con.cursor() as cur:
+            cur.execute('update users set current_fio = %s where telegram_id = %s', (value, telegram_id))
+            con.commit()
+    
 
 bot.infinity_polling()
 
