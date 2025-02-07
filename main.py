@@ -109,6 +109,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -124,6 +126,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -160,6 +164,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -175,6 +181,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -379,6 +387,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -394,6 +404,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -553,6 +565,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -562,12 +576,14 @@ def get_worker(message):
 
     apply_style(doc.tables[0].rows[1].cells[1].paragraphs[0], fio, BIGstyle)
     apply_style(doc.tables[0].rows[5].cells[1].paragraphs[0], str(number), BIGstyle)
-    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[1], position, BIGstyle)
+    apply_style(doc.tables[0].rows[6].cells[1].paragraphs[0], position, BIGstyle)
     apply_style(doc.tables[0].rows[9].cells[1].paragraphs[0], department, BIGstyle)
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[1], address, BIGstyle)
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
-    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
-    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[0].rows[15].cells[4].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -604,6 +620,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -619,6 +637,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -669,6 +689,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -684,6 +706,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -792,6 +816,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -807,6 +833,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1060,6 +1088,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1075,6 +1105,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1118,6 +1150,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1133,6 +1167,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1141,12 +1177,12 @@ def get_worker(message):
     apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
     apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-    apply_style(doc.tables[3].rows[8].cells[2].paragraphs[0], director, BIGstyle)
-    apply_style(doc.tables[3].rows[8].cells[4].paragraphs [0], date, BIGstyle)
-    apply_style(doc.tables[3].rows[9].cells[4].paragraphs [0], date, BIGstyle)
-    apply_style(doc.tables[3].rows[17].cells[1].paragraphs[0], name, BIGstyle)
-    apply_style(doc.tables[3].rows[17].cells[3].paragraphs[0], date, BIGstyle)
-    apply_style(doc.tables[3].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
     
     filename = f"LI_{name}_EOSDO_SS.doc"
     doc.save(filename)
@@ -1199,12 +1235,12 @@ def get_worker(message):
     apply_style(doc.tables[2].rows[17].cells[3].paragraphs[0], date, BIGstyle)
     apply_style(doc.tables[2].rows[3].cells[4].paragraphs [0], date, BIGstyle)
 
-    apply_style(doc.tables[3].rows[8].cells[2].paragraphs[0], director, BIGstyle)
-    apply_style(doc.tables[3].rows[8].cells[4].paragraphs [0], date, BIGstyle)
-    apply_style(doc.tables[3].rows[9].cells[4].paragraphs [0], date, BIGstyle)
-    apply_style(doc.tables[3].rows[17].cells[1].paragraphs[0], name, BIGstyle)
-    apply_style(doc.tables[3].rows[17].cells[3].paragraphs[0], date, BIGstyle)
-    apply_style(doc.tables[3].rows[3].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[2].paragraphs[0], director, BIGstyle)
+    apply_style(doc.tables[4].rows[8].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[9].cells[4].paragraphs [0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[1].paragraphs[0], name, BIGstyle)
+    apply_style(doc.tables[4].rows[17].cells[3].paragraphs[0], date, BIGstyle)
+    apply_style(doc.tables[4].rows[3].cells[4].paragraphs [0], date, BIGstyle)
     
     filename = f"LI_{name}_Pochta_StS.doc"
     doc.save(filename)
@@ -1234,6 +1270,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1249,6 +1287,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1364,6 +1404,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1379,6 +1421,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1560,6 +1604,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1575,6 +1621,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1625,6 +1673,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1640,6 +1690,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
@@ -1769,6 +1821,8 @@ def get_worker(message):
     department = data[4]
     address = data[5]
     director = data[6]
+    loggk = data[7]
+    gk = data[7].strip('@').split('@', 1)[0]
     date = datetime.today().strftime("%d.%m.%Y")
     name = fio.split(" ") 
     name = name[0] + " " + name[1][0] + "." + (name[2][0] + "." if len(name) > 2 else "")
@@ -1784,6 +1838,8 @@ def get_worker(message):
     apply_style(doc.tables[0].rows[10].cells[1].paragraphs[0], '', BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[1].paragraphs[1], name, BIGstyle)
     apply_style(doc.tables[0].rows[15].cells[4].paragraphs[1], date, BIGstyle)
+    apply_style(doc.tables[0].rows[13].cells[1].paragraphs[0], loggk, BIGstyle)
+    apply_style(doc.tables[0].rows[3].cells[2].paragraphs[0], gk, BIGstyle)
     
     apply_style(doc.tables[2].rows[8].cells[2].paragraphs[0], director, BIGstyle)
     apply_style(doc.tables[2].rows[8].cells[4].paragraphs [0], date, BIGstyle)
